@@ -6,6 +6,9 @@ class DataSource(models.Model):
     parsed_content = models.TextField(verbose_name="Continutul parsat")
     title = models.TextField(verbose_name="Titlul articolului")
 
+    date_created = models.DateTimeField(auto_now_add=True, verbose_name="Momentul crearii sursei")
+    date_modified = models.DateTimeField(auto_now=True, verbose_name="Momentul ultimei modificari")
+
     def __str__(self):
         return self.url
 
@@ -31,6 +34,9 @@ class Case(models.Model):
     case_number = models.PositiveIntegerField(verbose_name="Numarul cazului")
     collision_index = models.PositiveIntegerField(
         verbose_name="Indice suprapunere")
+
+    date_created = models.DateTimeField(auto_now_add=True, verbose_name="Momentul crearii cazului")
+    date_modified = models.DateTimeField(auto_now=True, verbose_name="Momentul ultimei modificari")
 
     MALE = 'M'
     FEMALE = 'F'

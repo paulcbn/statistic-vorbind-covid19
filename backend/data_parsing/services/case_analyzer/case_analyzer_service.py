@@ -1,3 +1,4 @@
+import datetime
 import logging
 
 from api_core.models import Case
@@ -56,7 +57,19 @@ def analyze_case(case, force_overwrite=False):
         case.save()
 
 
-def analyze_all_cases(force_overwrite=False):
+def get_queryset(today, source):
+    queryset = Case.objects.all()
+
+    if today:
+        queryset = queryset.filter(date_created__date=datetime.date.today())
+
+    if source:
+        queryset = queryset.filter(source__id=source)
+
+    return queryset
+
+
+def analyze_all_cases(force_overwrite=False, today=None, source=None):
     logger.info(f'Starting to analyze all cases (force_overwrite={force_overwrite})')
-    for case in Case.objects.all():
+    for case in get_queryset(today, source):
         analyze_case(case, force_overwrite=force_overwrite)

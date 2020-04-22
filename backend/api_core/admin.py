@@ -32,9 +32,10 @@ class CaseInline(admin.TabularInline):
 
 @admin.register(DataSource)
 class DataSourceAdmin(admin.ModelAdmin):
-    list_display = ('title', 'url')
+    list_display = ('id', 'title', 'url', 'date_created')
     save_on_top = True
     inlines = (CaseInline,)
+    readonly_fields = ('date_created', 'date_modified', 'id')
 
 
 @admin.register(Hospital)

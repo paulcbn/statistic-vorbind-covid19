@@ -2,6 +2,8 @@ import logging
 import re
 import time
 
+from django.db import IntegrityError
+
 from api_core.models import DataSource
 from data_parsing.services.soup_utils import get_soup_from_url
 
@@ -74,6 +76,8 @@ def collect_data_sources(base_url, page_count):
         try:
             DataSource.objects.create(url=url, parsed_content=content, title=title)
             added_count += 1
+        except IntegrityError as exc:
+            logger.info(f'Data source with url "{url}" already exists in the database. It is ignored.')
         except Exception as exc:
             logger.error(f"Could not create data source from {url}: {exc}")
 

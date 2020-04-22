@@ -12,7 +12,18 @@ class Command(BaseCommand):
             action='store_true',
             help='Overwrite all fields that already have a value instead of ignoring them.'
         )
+        parser.add_argument(
+            '--today',
+            action='store_true',
+            help='Analyze cases created today.'
+        )
+        parser.add_argument(
+            '--source',
+            help='Analyze cases for a given data source id.'
+        )
 
     def handle(self, *args, **options):
         overwrite = options.get('overwrite', False)
-        analyze_all_cases(force_overwrite=overwrite)
+        today = options.get('today', True)
+        source = options.get('source', None)
+        analyze_all_cases(force_overwrite=overwrite, today=today, source=source)

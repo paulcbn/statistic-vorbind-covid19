@@ -1,5 +1,8 @@
+import datetime
 import logging
 import re
+
+from django.db import IntegrityError
 
 from api_core.models import DataSource, Case
 
@@ -50,9 +53,17 @@ def create_deaths_for_source(source):
     return partial_result
 
 
-def create_deaths_from_data_sources():
+def get_filtered_queryset(today, start_date, end_date):
+    if today:
+        return DataSource.objects.filter(date_created__date=datetime.date.today())
+    elif start_date is not None or end_date is not None:
+        return DataSource.objects.filter(date_created__gte=start_date, date_created__lte=end_date)
+    return DataSource.objects.all()
+
+
+def create_deaths_from_data_sources(today=False, start_date=None, end_date=None):
     parsed_number_content_tuples = []
-    for source in DataSource.objects.all():
+    for source in get_filtered_queryset(today, start_date, end_date):
         logger.info(f"-------------- Source: {source.pk} -------------- \n")
         parsed_number_content_tuples += create_deaths_for_source(source)
 
@@ -82,5 +93,7 @@ def create_deaths_from_data_sources():
         for death in deaths_list:
             try:
                 death.save()
+            except IntegrityError:
+                logger.info(f'Could not create new case. Case with given case_number already exists "{case_number}"')
             except Exception as exc:
                 logger.error(f'Could not save death {death}: {exc}')

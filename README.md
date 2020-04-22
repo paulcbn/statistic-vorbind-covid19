@@ -1,5 +1,5 @@
 
-# Analyzr
+# statistic-vorbind-covid19
 
 ## Project setup 
 
