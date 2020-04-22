@@ -1,0 +1,74 @@
+from django.db import models
+
+
+class DataSource(models.Model):
+    url = models.URLField(verbose_name="Sursa de informare", unique=True)
+    parsed_content = models.TextField(verbose_name="Continutul parsat")
+    title = models.TextField(verbose_name="Titlul articolului")
+
+    def __str__(self):
+        return self.url
+
+
+class Comorbidity(models.Model):
+    name = models.CharField(verbose_name="Numele conditiei medicale", max_length=200, unique=True)
+
+    def __str__(self):
+        return self.name
+
+
+class Hospital(models.Model):
+    name = models.CharField(verbose_name="Numele spitalului", max_length=200, unique=True)
+
+    def __str__(self):
+        return self.name
+
+
+class Case(models.Model):
+    class Meta:
+        unique_together = ['case_number', 'collision_index']
+
+    case_number = models.PositiveIntegerField(verbose_name="Numarul cazului")
+    collision_index = models.PositiveIntegerField(
+        verbose_name="Indice suprapunere")
+
+    MALE = 'M'
+    FEMALE = 'F'
+
+    GENDER_CHOICES = [
+        (MALE, 'Male'),
+        (FEMALE, 'Female'),
+    ]
+
+    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, verbose_name="Sex", null=True, blank=True)
+    age = models.PositiveSmallIntegerField(verbose_name="Varsta", null=True, blank=True)
+
+    hospital_admission_date = models.DateField(verbose_name="Data internarii", null=True, blank=True)
+    test_date = models.DateField(verbose_name="Data recoltarii probei", null=True, blank=True)
+    positive_result_date = models.DateField(verbose_name="Data rezultatului pozitiv", null=True, blank=True)
+    death_date = models.DateField(verbose_name="Data decesului", null=True, blank=True)
+
+    comorbidities = models.ManyToManyField(to=Comorbidity, verbose_name="Comorbiditati (conditii medicale existente)",
+                                           blank=True)
+
+    initial_hospital = models.ForeignKey(to=Hospital,
+                                         on_delete=models.CASCADE,
+                                         verbose_name="Spitalul de internare initial",
+                                         related_name="initially_admitted_deaths",
+                                         null=True, blank=True)
+    final_hospital = models.ForeignKey(to=Hospital,
+                                       on_delete=models.CASCADE,
+                                       verbose_name="Spitalul decesului",
+                                       related_name="finally_admitted_deaths",
+                                       null=True, blank=True)
+
+    source = models.ForeignKey(to=DataSource, on_delete=models.CASCADE, verbose_name="Sursa de date")
+    parsed_text = models.TextField(verbose_name="Textul interpretat")
+
+    validated = models.BooleanField(verbose_name="Deces validat manual", default=False)
+
+    def __str__(self):
+        collision = ''
+        if self.collision_index > 1:
+            collision = f' ({self.collision_index})'
+        return f'{self.case_number}{collision}'

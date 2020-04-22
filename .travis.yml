@@ -1,0 +1,13 @@
+language: python
+python:
+  - "3.7.6"
+install:
+  - cd backend
+  - pip install -r requirements.txt
+  - cp .env.example .env
+  - python manage.py makemigrations
+  - python manage.py makemigrations api_core
+  - python manage.py makemigrations data_parsing
+  - python manage.py migrate
+script:
+  - python manage.py test
