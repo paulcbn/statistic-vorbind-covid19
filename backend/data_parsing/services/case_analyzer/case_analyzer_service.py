@@ -78,7 +78,7 @@ def analyze_case_for_all_fields(case, force_overwrite=False):
         case.save()
 
 
-def get_queryset(today, source):
+def get_queryset(today, source, number):
     queryset = Case.objects.all()
 
     if today:
@@ -87,13 +87,16 @@ def get_queryset(today, source):
     if source:
         queryset = queryset.filter(source__id=source)
 
+    if number:
+        queryset = queryset.filter(case_number=number)
+
     return queryset
 
 
-def analyze_all_cases(force_overwrite=False, today=None, source=None, only_field=None):
+def analyze_all_cases(force_overwrite=False, today=None, source=None, only_field=None, number=None):
     logger.info(f'Starting to analyze all cases (force_overwrite={force_overwrite})')
 
-    for case in get_queryset(today, source):
+    for case in get_queryset(today, source, number):
         if only_field:
             analyze_case_for_one_field(case, field=only_field, force_overwrite=force_overwrite)
         else:
