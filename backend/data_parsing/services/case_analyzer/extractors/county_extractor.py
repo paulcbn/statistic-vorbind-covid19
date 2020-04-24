@@ -10,8 +10,9 @@ replace_dict = {
     'ă': '[aă]',
     'â': '[aâ]',
     'î': '[iî]',
-    'ș': '[sș]',
-    'ț': '[tț]',
+    'ș': '[sșş]',
+    'ț': '[tțţ]',
+    '-': '[- ]',
 }
 
 
@@ -21,10 +22,7 @@ def generate_county_regex(county_name: str):
         pattern = pattern.replace(letter, alternatives)
 
     pattern = pattern.lower()
-    return re.compile(f'\\W{pattern}\W', re.I | re.M)
-
-
-COUNTY_KEYWORD = re.compile(r'jude[tțţ]', re.I | re.M)
+    return re.compile(fr'{pattern}\W', re.I | re.M)
 
 
 def extract_county(content):
@@ -33,7 +31,7 @@ def extract_county(content):
 
     for county_code, county_name in Counties.CHOICES:
         regex = generate_county_regex(county_name)
-        match = first_match_after_anchor(content, COUNTY_KEYWORD, regex)
+        match = regex.search(content)
         if match and match.start() < pos:
             result = county_code
             pos = match.start()
