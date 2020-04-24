@@ -1,5 +1,7 @@
 from django.db import models
 
+from api_core.config.counties import Counties
+
 
 class DataSource(models.Model):
     url = models.URLField(verbose_name="Sursa de informare", unique=True)
@@ -48,6 +50,7 @@ class Case(models.Model):
 
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES, verbose_name="Sex", null=True, blank=True)
     age = models.PositiveSmallIntegerField(verbose_name="Varsta", null=True, blank=True)
+    county = models.CharField(max_length=2, choices=Counties.CHOICES, verbose_name="Judet", null=True, blank=True)
 
     hospital_admission_date = models.DateField(verbose_name="Data internarii", null=True, blank=True)
     test_date = models.DateField(verbose_name="Data recoltarii probei", null=True, blank=True)

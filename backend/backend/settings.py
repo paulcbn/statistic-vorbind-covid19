@@ -17,8 +17,6 @@ import environ
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-
 REST_KNOX = {
     'TOKEN_TTL': timedelta(days=30),
     'AUTO_REFRESH': True,
@@ -36,6 +34,9 @@ ALLOWED_HOSTS = env('ALLOWED_HOSTS')
 
 if DEBUG:
     ALLOWED_HOSTS.append('localhost')
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+else:
+    logging.basicConfig(filename='backend.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Application definition
 
