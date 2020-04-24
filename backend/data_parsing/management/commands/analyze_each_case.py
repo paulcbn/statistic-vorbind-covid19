@@ -21,9 +21,14 @@ class Command(BaseCommand):
             '--source',
             help='Analyze cases for a given data source id.'
         )
+        parser.add_argument(
+            '--field',
+            help='Analyze cases just in regard to the given field'
+        )
 
     def handle(self, *args, **options):
         overwrite = options.get('overwrite', False)
         today = options.get('today', True)
         source = options.get('source', None)
-        analyze_all_cases(force_overwrite=overwrite, today=today, source=source)
+        only_field = options.get('field', None);
+        analyze_all_cases(force_overwrite=overwrite, today=today, source=source, only_field=only_field)
