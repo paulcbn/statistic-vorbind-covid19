@@ -70,8 +70,8 @@ def analyze_case_for_all_fields(case, force_overwrite=False):
         value = extract_func(case.parsed_text)
         if value is None:
             logger.warning(f'Could not extract "{field}" from case "{case}".')
-
-        changed = changed or replace_and_log_value(case, field, value, force_overwrite)
+        field_changed = replace_and_log_value(case, field, value, force_overwrite)
+        changed = changed or field_changed
 
     if changed:
         case.validated = False
