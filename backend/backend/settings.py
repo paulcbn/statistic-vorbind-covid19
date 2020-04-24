@@ -34,9 +34,8 @@ ALLOWED_HOSTS = env('ALLOWED_HOSTS')
 
 if DEBUG:
     ALLOWED_HOSTS.append('localhost')
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-else:
-    logging.basicConfig(filename='backend.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Application definition
 
