@@ -12,3 +12,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         pages = options['pages']
         collect_data_sources(base_url="https://stirioficiale.ro/informatii", page_count=pages)
+
+    @staticmethod
+    def auto_collect():
+        collect_data_sources(base_url="https://stirioficiale.ro/informatii", page_count=3)
