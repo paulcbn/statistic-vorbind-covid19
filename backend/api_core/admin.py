@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.utils.safestring import mark_safe
 
 from api_core.models import Case, DataSource, Hospital, Comorbidity
 
@@ -32,10 +33,20 @@ class CaseInline(admin.TabularInline):
 
 @admin.register(DataSource)
 class DataSourceAdmin(admin.ModelAdmin):
-    list_display = ('id', 'title', 'url', 'date_created')
+    list_display = ('id', 'title', 'url', 'date_created', 'status')
     save_on_top = True
     inlines = (CaseInline,)
     readonly_fields = ('date_created', 'date_modified', 'id')
+
+    def status(self, obj):
+        is_validated = True
+        for case in obj.case_set.all():
+            if not case.validated:
+                is_validated = False
+        if is_validated:
+            return mark_safe("<p style='color:green'>Validated</p>")
+        else:
+            return mark_safe("<p style='color:red'>Not validated</p>")
 
 
 @admin.register(Hospital)
