@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from api_core.models import Case, DataSource, Hospital, Comorbidity
+from api_core.models import Case, DataSource, Hospital, Comorbidity, Statistics
 
 
 @admin.register(Case)
@@ -45,4 +45,9 @@ class HospitalAdmin(admin.ModelAdmin):
 
 @admin.register(Comorbidity)
 class ComorbidityAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(Statistics)
+class StatisticsAdmin(admin.ModelAdmin):
     pass

@@ -1,3 +1,4 @@
+from django.contrib.postgres.forms import JSONField
 from django.db import models
 
 
@@ -78,3 +79,19 @@ class Case(models.Model):
         if self.collision_index > 1:
             collision = f' ({self.collision_index})'
         return f'{self.case_number}{collision}'
+
+
+class Statistics(models.Model):
+    content = models.TextField(null=False, blank=False, verbose_name="Continut")
+    date_created = models.DateTimeField(auto_now_add=True, verbose_name="Data generarii statisticii")
+    field = models.CharField(max_length=25, null=True, blank=True)
+    groups = models.CharField(max_length=50, null=True, blank=True)
+    filters = models.CharField(max_length=255, null=True, blank=True)
+    group_by_gender = models.BooleanField(default=False)
+    group_by_county = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"Statistic on {self.field}"
+
+    class Meta:
+        verbose_name_plural = "Statistics"
