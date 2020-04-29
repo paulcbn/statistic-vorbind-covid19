@@ -1,74 +1,49 @@
 import AppBar from '@material-ui/core/AppBar/AppBar';
 import Box from '@material-ui/core/Box';
-import IconButton from '@material-ui/core/IconButton';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import AccountIcon from '@material-ui/icons/AccountCircle';
-import LogoutIcon from '@material-ui/icons/ExitToApp';
-import MenuIcon from '@material-ui/icons/Menu';
-import React, { useCallback, useMemo } from 'react';
-import { userTypes } from '../../lib/constants';
-import { deepGet } from '../../lib/utils';
+import clsx from 'clsx';
+import React, { useCallback } from 'react';
+import { Link, NavLink } from 'react-router-dom';
 import { useLayoutHeaderStyle } from './styles';
 
-const LayoutHeader = ({ onLogout, user, onOpenProfile, onOpenMenu, onOpenDashboard }) => {
+const links = [
+  { label: 'Situație zilnică', to: '/situatie-zilnica/' },
+  { label: 'Statistici', to: '/statistici/' },
+  { label: 'Listă cazuri', to: '/lista-cazuri/' },
+];
+
+const CustomNavLink = ({ label, to, exact }) => {
   const classes = useLayoutHeaderStyle();
 
-  const { userType } = useMemo(() => ({
-    userType: deepGet(user, 'userType'),
-  }), [ user ]);
-
-  const isLoggedIn = useMemo(() => userType !== undefined, [ userType ]);
-  const renderMenuButton = useCallback(() => {
-    if (isLoggedIn)
-      return <IconButton edge="start" className={ classes.menuButton } color={ 'inherit' } onClick={ onOpenMenu }>
-        <MenuIcon/>
-      </IconButton>;
-    return <></>;
-  }, [ isLoggedIn, classes, onOpenMenu ]);
-
-  const renderTitle = useCallback(() => {
-    if (userType === userTypes.DOCTOR)
-      return <Typography variant="h5">
-        Analyzr
-        <Typography component='span' variant={ 'h5' } className={ classes.userType }>.Doctor</Typography>
-      </Typography>;
-
-    if (userType === userTypes.PATIENT)
-      return <Typography variant="h5">
-        Analyzr
-        <Typography component='span' variant={ 'h5' } className={ classes.userType }>.Patient</Typography>
-      </Typography>;
-
-    return <Typography variant="h5">
-      Analyzr
-    </Typography>;
-  }, [ userType, classes ]);
-
-  const renderIconButtons = useCallback(() => {
-    if (isLoggedIn)
-      return <>
-        <IconButton color={ 'inherit' } onClick={ onOpenProfile }>
-          <AccountIcon/>
-        </IconButton>
-        <IconButton color={ 'inherit' } className={ classes.logoutIcon } onClick={ onLogout }>
-          <LogoutIcon/>
-        </IconButton>
-      </>;
-
-    return <></>;
-  }, [ isLoggedIn, classes, onOpenProfile, onLogout ]);
+  return <NavLink
+    key={ label }
+    exact={ exact }
+    to={ to }
+    className={ clsx(classes.link, classes.navLink) }
+    activeClassName={ classes.navLinkActive }>
+    <Typography className={ classes.navText } variant='body1'>
+      { label }
+    </Typography>
+  </NavLink>;
+};
 
 
-  return <AppBar position="static">
+const LayoutHeader = () => {
+  const classes = useLayoutHeaderStyle();
+
+  const renderAllLinks = useCallback(() => links.map((linkData, index) => <CustomNavLink { ...linkData }/>), []);
+
+  return <AppBar position="static" className={ classes.appBar }>
     <Toolbar>
-      { renderMenuButton() }
-      <Box onClick={ onOpenDashboard } className={ classes.title }>
-        { renderTitle() }
-      </Box>
+      <Link to='/' className={ classes.link }>
+        <Typography className={ classes.inline } variant='h5'>Situație decese - </Typography>
+        <Typography className={ classes.inline } variant='h5' color='secondary'> COVID19 </Typography>
+      </Link>
       <Box className={ classes.flexExpander }/>
-      { renderIconButtons() }
+      { renderAllLinks() }
     </Toolbar>
+
   </AppBar>;
 };
 

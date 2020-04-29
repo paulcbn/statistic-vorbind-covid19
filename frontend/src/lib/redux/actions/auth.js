@@ -1,40 +1,15 @@
 import API, { keysToCamel } from '../../api';
 
-export const loadUser = () => {
+export const loadAgeHistogram = () => {
   return (dispatch, getState) => {
-    dispatch({ type: 'CURRENT_USER_LOADING' });
-    API.get('/api/auth/user/')
+    dispatch({ type: 'AGE_HISTOGRAM_LOADING' });
+    API.get(`/api/statistics/?search_string=full-age-histogram`)
       .then(({ status, data }) => {
         if (status === 200) {
-          dispatch({ type: 'CURRENT_USER_LOADED', data: keysToCamel(data) });
-          dispatch({ type: 'CLEAR_AUTH_ERRORS' });
+          dispatch({ type: 'AGE_HISTOGRAM_LOADED', data: keysToCamel(data) });
         } else if (status >= 400 && status < 500) {
-          dispatch({ type: 'CURRENT_USER_ERROR', data: keysToCamel(data) });
+          dispatch({ type: 'AGE_HISTOGRAM_ERROR', data: keysToCamel(data) });
         }
       });
-  };
-};
-
-export const login = (username, password, captcha) => {
-  return (dispatch, getState) => {
-    dispatch({ type: 'LOGIN_LOADING' });
-    return API.post('/api/auth/login/', { username, password, captcha })
-      .then(({ data, status }) => {
-        if (status === 200) {
-          dispatch({ type: 'LOGIN_LOADED', data: keysToCamel(data) });
-          dispatch({ type: 'CLEAR_AUTH_ERRORS' });
-          dispatch(loadUser());
-        } else {
-          dispatch({ type: 'LOGIN_ERROR', data: keysToCamel(data) });
-        }
-      }).catch(reason => dispatch({ type: 'LOGIN_ERROR', data: { exception: reason } }));
-  };
-};
-
-export const logout = () => {
-  return async (dispatch, getState) => {
-    await API.post('/api/auth/logout/');
-    dispatch({ type: 'LOGOUT_LOADED' });
-    dispatch({ type: 'CLEAR_AUTH_ERRORS' });
   };
 };
