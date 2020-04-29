@@ -15,3 +15,5 @@ six==1.14.0
 soupsieve==2.0
 sqlparse==0.3.1
 urllib3==1.25.9
+APScheduler==3.6.3
+django-apscheduler==0.3.0
