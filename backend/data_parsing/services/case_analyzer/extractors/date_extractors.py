@@ -60,9 +60,9 @@ def abstract_date_extractor(content, *,
         return result
 
 
-ADMITTED_KEYWORD_REGEX = re.compile(r'internat|interne|internare', re.I)
+ADMITTED_KEYWORD_REGEX = re.compile(r'internat|interne|internare|internăr', re.I)
 CONFIRMED_KEYWORD_REGEX = re.compile(r'confirm|pozitiv|rezultat', re.I)
-TEST_KEYWORD_REGEX = re.compile(r'recolta', re.I)
+TEST_KEYWORD_REGEX = re.compile(r'recolt[aă]', re.I)
 DECEASED_KEYWORD_REGEX = re.compile(r'deces|deced', re.I)
 
 HAPPY_FLOW_DEATH_DATE_REGEX = re.compile(

@@ -1,0 +1,105 @@
+{% extends 'admin/change_form.html' %}
+{% load admin_urls %}
+{% load static %}
+{% url 'admin:app_list' app_label=opts.app_label %}
+
+{% block content %}
+
+    <script>
+        function perform(module, cmd) {
+
+            document.getElementById(module + "." + cmd + "_key").value = auth;
+        }
+
+        function prepare(module, cmd) {
+            document.getElementById("form").style.display = "inherit";
+            let template = {
+                'module': module,
+                'command': cmd,
+                'args': ['arg1', 'arg2'],
+                'kwargs': {
+                    'kwarg1': 'value',
+                    'kwarg2': 'value'
+                }
+            };
+            document.getElementById("jsonfield").value = JSON.stringify(template, null, '\t');
+        }
+
+        url = window.location.pathname;
+        correct_url = url.replace('execute/', '');
+        if (url != correct_url)
+            history.replaceState(null, '', correct_url);
+    </script>
+
+    <h1>Management Commands</h1>
+    <div class="help">
+        This page allows performing management commands. Please be aware that longer commands may timout and not work as
+        expected.
+    </div></br>
+    {% if results or errors %}
+        <div class="module form-row" style="max-width: 1000px;">
+            <h2>Command Results</h2>
+
+            <div class="module submit-row help" style="text-align:left">
+                {{ results | safe | linebreaks }}
+                {% if errors %}
+                    <div style="color:#ba2121">
+                        {{ errors|linebreaks }}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+    {% for module in modules %}
+        <div class="module form-row" style="max-width:1000px">
+            <h2>{{ module }}</h2>
+            <table style="width:100%">
+                <thead>
+                <tr>
+                    <th class="sortable column-context">Command</th>
+                    <th class="sortable column-context">Help</th>
+                    <th class="sortable column-context">Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for cmd in commands %} {% if cmd.module == module %}
+                    <tr class="row{{ cmd.css_order }}">
+                        <div style="display:none">
+                            <!-- Form data -->
+                            <input type="text" name="module" value="{{ cmd.module }}"/>
+                            <input type="text" name="command" value="{{ cmd.command }}"/>
+                            <input type="text" name="key" id="{{ cmd.module }}.{{ cmd.command }}_key" value=""/>
+                        </div>
+                        <td style="width:20%">{{ cmd.command }}</td>
+                        <td>{{ cmd.help }}</td>
+                        <!-- <td style="width:20%"><input type="textbox" name="args"
+                                                         id="{{ cmd.module }}.{{ cmd.command }}_args"></td>
+                             <td style="width:20%"><input type="textbox" name="pos_args"
+                                                         id="{{ cmd.module }}.{{ cmd.command }}_pargs"></td>
+                                                   -->
+                        <td style="width:10%">
+                            <input type="submit" onclick="prepare('{{ cmd.module }}', '{{ cmd.command }}')"
+                                   value="To JSON"/>
+                        </td>
+                    </tr>
+                {% endif %}
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endfor %}
+
+    <div class="module form-row" style="max-width:1000px;display:none" id='form'>
+        <div class="module form-row" style="font-size: smaller;color:gray">
+            Untested positional arguments. Keep that in mind, use kwagrs when possible.
+        </div>
+        <h2>JSON</h2>
+        <form method="post" action="execute/">
+            {% csrf_token %}
+            <textarea style="width:98.5%; height:150px" name="json" id="jsonfield"></textarea>
+            <input type="submit" value="Perform" onclick="perform('json','cmd')"/>
+        </form>
+    </div>
+
+{% endblock %}
+

@@ -1,4 +1,7 @@
+from django.contrib.postgres.forms import JSONField
 from django.db import models
+
+from api_core.config.counties import Counties
 
 
 class DataSource(models.Model):
@@ -48,6 +51,7 @@ class Case(models.Model):
 
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES, verbose_name="Sex", null=True, blank=True)
     age = models.PositiveSmallIntegerField(verbose_name="Varsta", null=True, blank=True)
+    county = models.CharField(max_length=2, choices=Counties.CHOICES, verbose_name="Judet", null=True, blank=True)
 
     hospital_admission_date = models.DateField(verbose_name="Data internarii", null=True, blank=True)
     test_date = models.DateField(verbose_name="Data recoltarii probei", null=True, blank=True)
@@ -78,3 +82,19 @@ class Case(models.Model):
         if self.collision_index > 1:
             collision = f' ({self.collision_index})'
         return f'{self.case_number}{collision}'
+
+
+class Statistics(models.Model):
+    content = models.TextField(null=False, blank=False, verbose_name="Continut")
+    date_created = models.DateTimeField(auto_now_add=True, verbose_name="Data generarii statisticii")
+    field = models.CharField(max_length=25, null=True, blank=True)
+    groups = models.CharField(max_length=50, null=True, blank=True)
+    filters = models.CharField(max_length=255, null=True, blank=True)
+    group_by_gender = models.BooleanField(default=False)
+    group_by_county = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"Statistic on {self.field}"
+
+    class Meta:
+        verbose_name_plural = "Statistics"
