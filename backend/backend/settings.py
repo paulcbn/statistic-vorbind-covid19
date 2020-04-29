@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 import logging
 import os
-from datetime import timedelta
 
 import environ
 
@@ -43,7 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'api_core',
-    'data_parsing',
+    'data_parsing.apps.DataParsingConfig',
     'django_apscheduler',
     'command_runner',
 ]

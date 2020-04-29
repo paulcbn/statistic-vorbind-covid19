@@ -1,6 +1,5 @@
 import ast
 
-from django.apps import apps
 from django.core.management import BaseCommand
 
 from api_core.models import Case
