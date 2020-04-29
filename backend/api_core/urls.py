@@ -1,8 +1,7 @@
-from django.conf.urls import url
-from django.urls import include, path
+from django.urls import path
 
-from api_core.views import StatisticsView
+from api_core.views import StatisticView
 
 urlpatterns = [
-    url(r'^statistics', StatisticsView.as_view(), name='app_gallery'),
+    path('statistics/<str:search_string>', StatisticView.as_view()),
 ]
