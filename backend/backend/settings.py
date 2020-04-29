@@ -17,11 +17,6 @@ import environ
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-REST_KNOX = {
-    'TOKEN_TTL': timedelta(days=30),
-    'AUTO_REFRESH': True,
-}
-
 env = environ.Env(
     DEBUG=(bool, False),
     ALLOWED_HOSTS=(list, ['127.0.0.1', 'localhost']),

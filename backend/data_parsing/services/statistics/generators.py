@@ -1,119 +1,158 @@
+import dataclasses
 import json
-from datetime import datetime
+import uuid
+from dataclasses import dataclass
 
 from django.db.models import Max, Avg, Count, Min
 
-from api_core.models import Statistics
+from api_core.config.counties import Counties
+from api_core.models import Statistic, Case
+
+
+@dataclass
+class GroupedDataEntry:
+    key: int
+    value: int
+    label: str
+
+
+def get_group_index(value, boundaries):
+    if value <= boundaries[0]:
+        return 0
+    for j in range(0, len(boundaries) - 1):
+        if boundaries[j] < value <= boundaries[j + 1]:
+            return j + 1
+    return len(boundaries)
+
+
+def create_groups(boundaries):
+    groups = []
+    boundaries_count = len(boundaries)
+    for index in range(boundaries_count - 1):
+        lower_bound = boundaries[index]
+        upper_bound = boundaries[index + 1] - 1
+        key = index + 1
+        groups.append((lower_bound, upper_bound, key))
+
+    if len(boundaries) > 0:
+        groups = [(None, boundaries[0] - 1, 0)] + groups + [(boundaries[-1], None, boundaries_count + 1)]
+
+    return groups
+
+
+def create_bounding_filter(field, lower_bound, upper_bound):
+    filter_dict = dict()
+    if lower_bound:
+        filter_dict[f'{field}__gte'] = lower_bound
+    if upper_bound:
+        filter_dict[f'{field}__lte'] = upper_bound
+    return filter_dict
+
+
+def create_bounding_label(lower_bound, upper_bound):
+    if lower_bound and upper_bound:
+        return f'{lower_bound} - {upper_bound}'
+
+    if lower_bound:
+        return f'după {lower_bound}'
+
+    if upper_bound:
+        return f'până în {upper_bound}'
+
+    return '-'
+
+
+def get_distribution_by_boundary_grouping(queryset, field, grouping_boundaries):
+    groups = create_groups(grouping_boundaries)
+    data = []
+    for lower_bound, upper_bound, key in groups:
+        filter_dict = create_bounding_filter(field, lower_bound, upper_bound)
+        label = create_bounding_label(lower_bound, upper_bound)
+        value = queryset.filter(**filter_dict).count()
+
+        data.append(GroupedDataEntry(value=value, label=label, key=key))
+
+    return data
+
+
+def get_distribution_by_gender_grouping(queryset, field):
+    data = []
+    for key, gender in enumerate((Case.MALE, Case.FEMALE)):
+        value = queryset.filter(gender=gender).aggregate(count=Count(field)).get('count')
+        data.append(GroupedDataEntry(value=value, label=gender, key=key))
+    return data
+
+
+def get_distribution_by_county_grouping(queryset, field):
+    data = []
+    for key, county in enumerate(Counties.CHOICES):
+        county_code, _ = county
+        value = queryset.filter(county=county_code).aggregate(count=Count(field)).get('count')
+        data.append(GroupedDataEntry(value=value, label=county_code, key=key))
+    return data
+
+
+def get_distribution(queryset, field):
+    result = []
+    for key, tuple_ in enumerate(queryset.values(field).annotate(count=Count(field)).order_by().values_list()):
+        field_value, count_value = tuple_
+        result.append(GroupedDataEntry(key=key, value=count_value, label=field_value))
+    return result
+
+
+def get_serializable_data(data):
+    dict_list = map(dataclasses.asdict, data)
+    return list(dict_list)  # map objects are generators, therefore not serializable
+
+
+def get_filter_string(filter_dict):
+    def key_value_pair_to_string(item):
+        key, value = item
+        return f'{key}={value}'
+
+    return ','.join(map(key_value_pair_to_string, filter_dict.items()))
 
 
 def generate_distribution(queryset, options):
-    # used to be really general, now it's mostly stuck doing Case
-    field = options.get('fields')[0]
-    groups = options.get('group')
+    field = options.get('field')
+    grouping_boundaries = options.get('grouping_boundaries')
     group_county = options.get('group_by_county')
     group_gender = options.get('group_by_gender')
+    search_string = options.get('search_string')
 
-    aggregation = queryset.aggregate(min=Min(field), max=Max(field), average=Avg(field))
+    queryset = queryset.filter(**{f'{field}__isnull': False})
 
-    def get_group(value):
-        if value <= groups[0]:
-            return 0
-        for j in range(0, len(groups) - 1):
-            if groups[j] < value <= groups[j + 1]:
-                return j + 1
-        return len(groups)
+    aggregation = queryset.aggregate(min=Min(field), max=Max(field), average=Avg(field), sample_size=Count('pk'))
 
-    if groups:
-        data = [{
-            'key': 0,
-            'count': 0,
-            'label': f"sub {groups[0]}"
-        }]
-        for group_id in range(0, len(groups) - 1):
-            data.append({
-                'key': group_id + 1,
-                'count': 0,
-                'label': f"{groups[group_id]} - {groups[group_id + 1]}",
-            })
-
-        data.append({
-            'key': group_id,
-            'count': 0,
-            'label': f"peste {groups[-1]}",
-        })
-
-        for a in queryset.values(field).annotate(count=Count(field)).all():
-            data[get_group(a[field])]['count'] = data[get_group(a[field])]['count'] + 1
-
+    if grouping_boundaries:
+        data = get_distribution_by_boundary_grouping(queryset, field, grouping_boundaries)
     elif group_gender:
-        males = []
-        females = []
-
-        for a in queryset.values(field).annotate(count=Count(field)).all():
-            if a.gender == queryset.model.MALE:
-                males.append({a[field]: a['count']})
-            else:
-                females.append({a[field]: a['count']})
-
-        data = [
-            {
-                'males': males
-            },
-            {
-                'females': females
-            }
-        ]
-
+        data = get_distribution_by_gender_grouping(queryset, field)
     elif group_county:
-        counties = {}
-        # TODO: implement this.
-        # for a in queryset.values(field).annotate(count=Count(field)).all():
-        #     if a.county in counties.keys():
-        #         counties[a.county]
+        data = get_distribution_by_county_grouping(queryset, field)
     else:
-        data = [{a[field]: a['count']} for a in queryset.values(field).annotate(count=Count(field)).all()]
+        data = get_distribution(queryset, field)
 
-    statistics = {
-        'data': data,
+    serializable_data = get_serializable_data(data)
+    statistics_data = {
+        'data': serializable_data,
         'aggregation': aggregation,
         'meta': {
-            'model': options.get('model'),
-            'fields': options.get('fields'),
-            'normalized': options.get('normalize'),
-            'type': options.get('type'),
-            'filters': options.get('filters'),
+            'field': options.get('field'),
         }
     }
 
-    group_str = str(groups)[1:-1].replace(' ', '')
-    filters_str = str(options.get('filters'))[1:-1].replace("'", "").replace(' ', '')
-    statistics_entry = Statistics.objects.get(
-        groups=group_str,
-        group_by_gender=group_gender,
-        group_by_county=group_county,
-        field=field,
-        filters=filters_str
-    )
-    if statistics_entry:
-        print("Replacing old statistics")
-        statistics_entry.update(
-            content=data,
-            date_created=datetime.now(),
-            groups=group_str,
-            group_by_gender=group_gender,
-            group_by_county=group_county,
-            field=field,
-            filters=filters_str
-        )
-        return
+    group_str = ','.join(map(str, grouping_boundaries))
+    filters_str = get_filter_string(options.get('filters', {}))
 
-    Statistics.objects.create(
-        content=data,
-        date_created=datetime.now(),
+    statistics_entry, created = Statistic.objects.get_or_create(
         groups=group_str,
         group_by_gender=group_gender,
         group_by_county=group_county,
         field=field,
         filters=filters_str
     )
-    print(f"Generated {statistics}")
+    json_string = json.dumps(statistics_data)
+    statistics_entry.content = json_string
+    statistics_entry.search_string = search_string if search_string else uuid.uuid4()
+    statistics_entry.save()
