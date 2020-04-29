@@ -1,2 +1,2 @@
-export * from 'common/Login';
-export * from 'common/NotFound';
+export * from './NotFound';
+export * from './Dashboard';

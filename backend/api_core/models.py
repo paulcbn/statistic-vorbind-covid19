@@ -1,10 +1,13 @@
-from django.contrib.postgres.forms import JSONField
 from django.db import models
 
 from api_core.config.counties import Counties
 
 
 class DataSource(models.Model):
+    class Meta:
+        verbose_name = 'Sursă de date'
+        verbose_name_plural = 'Surse de date'
+
     url = models.URLField(verbose_name="Sursa de informare", unique=True)
     parsed_content = models.TextField(verbose_name="Continutul parsat")
     title = models.TextField(verbose_name="Titlul articolului")
@@ -17,6 +20,10 @@ class DataSource(models.Model):
 
 
 class Comorbidity(models.Model):
+    class Meta:
+        verbose_name = 'Comorbiditate'
+        verbose_name_plural = 'Comorbidități'
+
     name = models.CharField(verbose_name="Numele conditiei medicale", max_length=200, unique=True)
 
     def __str__(self):
@@ -24,6 +31,10 @@ class Comorbidity(models.Model):
 
 
 class Hospital(models.Model):
+    class Meta:
+        verbose_name = 'Spital'
+        verbose_name_plural = 'Spitale'
+
     name = models.CharField(verbose_name="Numele spitalului", max_length=200, unique=True)
 
     def __str__(self):
@@ -33,6 +44,8 @@ class Hospital(models.Model):
 class Case(models.Model):
     class Meta:
         unique_together = ['case_number', 'collision_index']
+        verbose_name = 'Caz'
+        verbose_name_plural = 'Cazuri'
 
     case_number = models.PositiveIntegerField(verbose_name="Numarul cazului")
     collision_index = models.PositiveIntegerField(
@@ -84,9 +97,19 @@ class Case(models.Model):
         return f'{self.case_number}{collision}'
 
 
-class Statistics(models.Model):
+class Statistic(models.Model):
+    class Meta:
+        unique_together = ['field', 'groups', 'filters', 'group_by_gender', 'group_by_county']
+        verbose_name = "Statistică"
+        verbose_name_plural = "Statistici"
+
+    search_string = models.CharField(null=False, blank=False, verbose_name="String de cautare", unique=True, max_length=50)
+
     content = models.TextField(null=False, blank=False, verbose_name="Continut")
+
     date_created = models.DateTimeField(auto_now_add=True, verbose_name="Data generarii statisticii")
+    date_modified = models.DateTimeField(auto_now=True, verbose_name="Momentul ultimei modificari")
+
     field = models.CharField(max_length=25, null=True, blank=True)
     groups = models.CharField(max_length=50, null=True, blank=True)
     filters = models.CharField(max_length=255, null=True, blank=True)
@@ -94,7 +117,4 @@ class Statistics(models.Model):
     group_by_county = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"Statistic on {self.field}"
-
-    class Meta:
-        verbose_name_plural = "Statistics"
+        return f"Statistic on '{self.field}'"

@@ -17,11 +17,6 @@ import environ
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-REST_KNOX = {
-    'TOKEN_TTL': timedelta(days=30),
-    'AUTO_REFRESH': True,
-}
-
 env = environ.Env(
     DEBUG=(bool, False),
     ALLOWED_HOSTS=(list, ['127.0.0.1', 'localhost']),
@@ -125,5 +120,5 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
+STATIC_URL = '/static-admin/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static-admin/')

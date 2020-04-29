@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.safestring import mark_safe
 
-from api_core.models import Case, DataSource, Hospital, Comorbidity, Statistics
+from api_core.models import Case, DataSource, Hospital, Comorbidity, Statistic
 
 
 @admin.register(Case)
@@ -59,6 +59,9 @@ class ComorbidityAdmin(admin.ModelAdmin):
     pass
 
 
-@admin.register(Statistics)
+@admin.register(Statistic)
 class StatisticsAdmin(admin.ModelAdmin):
-    pass
+    list_display = (
+        'id', 'search_string', 'field', 'filters', 'groups', 'group_by_gender', 'group_by_county', 'date_created',
+        'date_modified',
+    )
