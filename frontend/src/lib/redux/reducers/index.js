@@ -1,7 +1,7 @@
 import { combineReducers } from 'redux';
-import auth from './auth';
+import globalStatistics from './globalStatistics';
 
 export const rootReducer = combineReducers({
-  auth
+  globalStatistics
 });
 

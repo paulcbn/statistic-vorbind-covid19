@@ -19,8 +19,8 @@ class Command(BaseCommand):
         parser.add_argument('--grouping_boundaries', nargs='+', type=int, default=[])
         parser.add_argument('--group_by_gender', action='store_true', default=False)
         parser.add_argument('--group_by_county', action='store_true', default=False)
+        parser.add_argument('--search_string', default=None)
 
     def handle(self, *args, **options):
-        model = Case
-        qs = model.objects.filter(**options.get('filters'))
+        qs = Case.objects.filter(**options.get('filters'))
         return generate_distribution(qs, options)

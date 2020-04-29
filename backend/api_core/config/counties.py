@@ -20,7 +20,7 @@ class Counties:
     GIURGIU = 'GR'
     GORJ = 'GJ'
     HARGHITA = 'HR'
-    HUNEDOARA = 'HR'
+    HUNEDOARA = 'HD'
     IALOMITA = 'IL'
     IASI = 'IS'
     ILFOV = 'IF'
