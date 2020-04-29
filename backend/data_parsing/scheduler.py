@@ -15,7 +15,7 @@ def start():
         logging.getLogger('apscheduler').setLevel(logging.DEBUG)
 
     scheduler.add_job(process_data_task, "cron", id="Process data", hour="*/3", minute="0", replace_existing=True)
-    logging.debug("Import data successfully!")
+    logging.info("Job started successfully!")
     register_events(scheduler)
 
     scheduler.start()
