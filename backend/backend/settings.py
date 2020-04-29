@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 import logging
 import os
-from datetime import timedelta
 
 import environ
 
@@ -43,8 +42,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'api_core',
-    'data_parsing',
-    'command_runner'
+    'data_parsing.apps.DataParsingConfig',
+    'django_apscheduler',
+    'command_runner',
 ]
 
 MIDDLEWARE = [
@@ -74,6 +74,16 @@ TEMPLATES = [
         },
     },
 ]
+
+SCHEDULER_CONFIG = {
+    "apscheduler.jobstores.default": {
+        "class": "django_apscheduler.jobstores:DjangoJobStore"
+    },
+    'apscheduler.executors.processpool': {
+        "type": "threadpool"
+    },
+}
+SCHEDULER_AUTOSTART = True
 
 if DEBUG:
     MIDDLEWARE.append('api_core.middleware.dev_cors_middleware')
