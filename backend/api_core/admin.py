@@ -38,14 +38,13 @@ class AgeFilter(admin.SimpleListFilter):
 
 @admin.register(Case)
 class CaseAdmin(admin.ModelAdmin):
-    list_filter = ("validated", "gender", AgeFilter)
+    list_filter = ("validated", "gender", AgeFilter, "county")
     readonly_fields = ['source', 'parsed_text']
     ordering = ('-case_number', 'collision_index')
     list_display = ('case_number', 'collision_index', 'gender', 'age', 'county',
                     'test_date', 'positive_result_date', 'hospital_admission_date',
                     'death_date', 'initial_hospital',
                     'final_hospital', 'validated', 'source')
-    search_fields = ['age', ]
     fieldsets = (
         ('Date deduse', {
             'fields': ('case_number', 'collision_index', 'gender', 'age', 'county',
