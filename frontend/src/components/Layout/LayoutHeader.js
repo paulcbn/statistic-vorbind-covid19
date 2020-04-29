@@ -17,7 +17,6 @@ const CustomNavLink = ({ label, to, exact }) => {
   const classes = useLayoutHeaderStyle();
 
   return <NavLink
-    key={ label }
     exact={ exact }
     to={ to }
     className={ clsx(classes.link, classes.navLink) }
@@ -32,7 +31,8 @@ const CustomNavLink = ({ label, to, exact }) => {
 const LayoutHeader = () => {
   const classes = useLayoutHeaderStyle();
 
-  const renderAllLinks = useCallback(() => links.map((linkData, index) => <CustomNavLink { ...linkData }/>), []);
+  const renderAllLinks = useCallback(() => links.map((linkData, index) => <CustomNavLink { ...linkData }
+                                                                                         key={ index }/>), []);
 
   return <AppBar position="static" className={ classes.appBar }>
     <Toolbar>
@@ -43,7 +43,7 @@ const LayoutHeader = () => {
       <Box className={ classes.flexExpander }/>
       { renderAllLinks() }
     </Toolbar>
-
+    
   </AppBar>;
 };
 

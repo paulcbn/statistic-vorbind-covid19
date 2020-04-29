@@ -1,3 +1,3 @@
-import * as auth from './auth';
+import * as globalStatistics from './globalStatistics';
 
-export { auth };
+export { globalStatistics };
