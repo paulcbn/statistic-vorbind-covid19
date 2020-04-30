@@ -2,11 +2,13 @@ import dataclasses
 import json
 import uuid
 from dataclasses import dataclass
+from math import sqrt
 
-from django.db.models import Max, Avg, Count, Min
+from django.db.models import Max, Avg, Count, Min, StdDev
 
 from api_core.config.counties import Counties
 from api_core.models import Statistic, Case
+from data_parsing.services.statistics.json_utils import json_converter
 
 
 @dataclass
@@ -94,7 +96,8 @@ def get_distribution_by_county_grouping(queryset, field):
 
 def get_distribution(queryset, field):
     result = []
-    for key, tuple_ in enumerate(queryset.values(field).annotate(count=Count(field)).order_by().values_list()):
+    for key, tuple_ in enumerate(queryset.values(field).annotate(count=Count(field)).order_by(field).values_list(field,
+                                                                                                                 'count')):
         field_value, count_value = tuple_
         result.append(GroupedDataEntry(key=key, value=count_value, label=field_value))
     return result
@@ -113,16 +116,59 @@ def get_filter_string(filter_dict):
     return ','.join(map(key_value_pair_to_string, filter_dict.items()))
 
 
+def get_grouping_aggregation(data):
+    n = len(data)
+    if n == 0:
+        return dict()
+    min_value, max_value = data[0].value, data[0].value
+    average = 0
+    for entry in data:
+        min_value = min(min_value, entry.value)
+        max_value = max(max_value, entry.value)
+        average += entry.value
+    average /= n
+
+    standard_dev = 0
+    for entry in data:
+        standard_dev += (entry.value - average) ** 2
+    if n > 1:
+        standard_dev = sqrt(standard_dev / (n - 1))
+
+    return {
+        'min_group_value': min_value,
+        'max_group_value': max_value,
+        'average_group_value': average,
+        'standard_dev': standard_dev
+    }
+
+
+def get_field_aggregations(queryset, field, numeric_field):
+    field_aggregations = {
+        'sample_size': Count('pk'),
+    }
+    if numeric_field:
+        field_aggregations.update({
+            'min_field_value': Min(field),
+            'max_field_value': Max(field),
+            'average_field_value': Avg(field),
+            'standard_field_deviation': StdDev(field),
+        })
+
+    return queryset.aggregate(**field_aggregations)
+
+
 def generate_distribution(queryset, options):
     field = options.get('field')
-    grouping_boundaries = options.get('grouping_boundaries')
-    group_county = options.get('group_by_county')
-    group_gender = options.get('group_by_gender')
+    grouping_boundaries = options.get('grouping_boundaries', [])
+    group_county = options.get('group_by_county', False)
+    group_gender = options.get('group_by_gender', False)
     search_string = options.get('search_string')
+    numeric_field = options.get('numeric_field', False)
+    filters = options.get('filters', {})
 
-    queryset = queryset.filter(**{f'{field}__isnull': False})
+    queryset = queryset.filter(**{f'{field}__isnull': False}).filter(**filters)
 
-    aggregation = queryset.aggregate(min=Min(field), max=Max(field), average=Avg(field), sample_size=Count('pk'))
+    direct_field_aggregation = get_field_aggregations(queryset, field, numeric_field)
 
     if grouping_boundaries:
         data = get_distribution_by_boundary_grouping(queryset, field, grouping_boundaries)
@@ -133,10 +179,12 @@ def generate_distribution(queryset, options):
     else:
         data = get_distribution(queryset, field)
 
+    grouping_values_aggregation = get_grouping_aggregation(data)
+
     serializable_data = get_serializable_data(data)
     statistics_data = {
         'data': serializable_data,
-        'aggregation': aggregation,
+        'aggregation': {**direct_field_aggregation, **grouping_values_aggregation},
         'meta': {
             'field': options.get('field'),
         }
@@ -152,7 +200,7 @@ def generate_distribution(queryset, options):
         field=field,
         filters=filters_str
     )
-    json_string = json.dumps(statistics_data)
+    json_string = json.dumps(statistics_data, default=json_converter)
     statistics_entry.content = json_string
     statistics_entry.search_string = search_string if search_string else uuid.uuid4()
     statistics_entry.save()

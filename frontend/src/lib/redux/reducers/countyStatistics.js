@@ -3,14 +3,9 @@ const initialState = {
   ageHistogramLoading: false,
   ageHistogramErrors: null,
 
-  countyHistogram: null,
-  countyHistogramLoading: false,
-  countyHistogramErrors: null,
-
   genderHistogram: null,
   genderHistogramLoading: false,
   genderHistogramErrors: null,
-
 
   deathDateHistogram: null,
   deathDateHistogramLoading: false,
@@ -18,84 +13,62 @@ const initialState = {
 };
 
 
-export default function global_statistics(state = initialState, action) {
+export default function countyStatistics(state = initialState, action) {
   switch (action.type) {
-    case 'GLOBAL_AGE_HISTOGRAM_LOADING':
+    case 'COUNTY_AGE_HISTOGRAM_LOADING':
       return {
         ...state,
         ageHistogramLoading: true,
         ageHistogramErrors: null,
       };
-    case 'GLOBAL_AGE_HISTOGRAM_LOADED':
+    case 'COUNTY_AGE_HISTOGRAM_LOADED':
       return {
         ...state,
         ageHistogram: action.data,
         ageHistogramLoading: false,
         ageHistogramErrors: null,
       };
-    case 'GLOBAL_AGE_HISTOGRAM_ERROR':
+    case 'COUNTY_AGE_HISTOGRAM_ERROR':
       return {
         ...state,
         ageHistogramLoading: false,
         ageHistogramErrors: action.data,
       };
 
-
-    case 'GLOBAL_COUNTY_HISTOGRAM_LOADING':
-      return {
-        ...state,
-        countyHistogramLoading: true,
-        countyHistogramErrors: null,
-      };
-    case 'GLOBAL_COUNTY_HISTOGRAM_LOADED':
-      return {
-        ...state,
-        countyHistogram: action.data,
-        countyHistogramLoading: false,
-        countyHistogramErrors: null,
-      };
-    case 'GLOBAL_COUNTY_HISTOGRAM_ERROR':
-      return {
-        ...state,
-        countyHistogramLoading: false,
-        countyHistogramErrors: action.data,
-      };
-
-
-    case 'GLOBAL_GENDER_HISTOGRAM_LOADING':
+    case 'COUNTY_GENDER_HISTOGRAM_LOADING':
       return {
         ...state,
         genderHistogramLoading: true,
         genderHistogramErrors: null,
       };
-    case 'GLOBAL_GENDER_HISTOGRAM_LOADED':
+    case 'COUNTY_GENDER_HISTOGRAM_LOADED':
       return {
         ...state,
         genderHistogram: action.data,
         genderHistogramLoading: false,
         genderHistogramErrors: null,
       };
-    case 'GLOBAL_GENDER_HISTOGRAM_ERROR':
+    case 'COUNTY_GENDER_HISTOGRAM_ERROR':
       return {
         ...state,
         genderHistogramLoading: false,
         genderHistogramErrors: null,
       };
 
-    case 'GLOBAL_DEATH_DATE_HISTOGRAM_LOADING':
+    case 'COUNTY_DEATH_DATE_HISTOGRAM_LOADING':
       return {
         ...state,
         deathDateHistogramLoading: true,
         deathDateHistogramErrors: null,
       };
-    case 'GLOBAL_DEATH_DATE_HISTOGRAM_LOADED':
+    case 'COUNTY_DEATH_DATE_HISTOGRAM_LOADED':
       return {
         ...state,
         deathDateHistogram: action.data,
         deathDateHistogramLoading: false,
         deathDateHistogramErrors: null,
       };
-    case 'GLOBAL_DEATH_DATE_HISTOGRAM_ERROR':
+    case 'COUNTY_DEATH_DATE_HISTOGRAM_ERROR':
       return {
         ...state,
         deathDateHistogramLoading: false,
