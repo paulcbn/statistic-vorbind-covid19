@@ -33,7 +33,7 @@ class ProductFilter(filters.FilterSet):
             'test_date': ['gte', 'lte', 'gt', 'lt'],
             'positive_result_date': ['gte', 'lte', 'gt', 'lt'],
             'death_date': ['gte', 'lte', 'gt', 'lt'],
-            'source': ['exact', ],
+            'source__url': ['exact', ],
             'comorbidities__name': ['icontains', ],
             'initial_hospital__name': ['icontains', ],
             'final_hospital__name': ['icontains', ],  # usage example: ?final_hospital__name__icontains=Covasna
