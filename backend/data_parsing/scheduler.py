@@ -14,7 +14,7 @@ def start():
         logging.basicConfig()
         logging.getLogger('apscheduler').setLevel(logging.DEBUG)
 
-    scheduler.add_job(process_data_task, "cron", id="Process data", hour="*", minute="*", replace_existing=True)
+    scheduler.add_job(process_data_task, "cron", id="Process data", hour="*/1", minute="0", replace_existing=True)
     logging.info("Job started successfully!")
     register_events(scheduler)
 
