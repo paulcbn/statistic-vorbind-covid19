@@ -20,7 +20,8 @@ class Command(BaseCommand):
         parser.add_argument('--group_by_gender', action='store_true', default=False)
         parser.add_argument('--group_by_county', action='store_true', default=False)
         parser.add_argument('--search_string', default=None)
+        parser.add_argument('--numeric_field', action='store_true', default=False)
 
     def handle(self, *args, **options):
-        qs = Case.objects.filter(**options.get('filters'))
+        qs = Case.objects.all()
         return generate_distribution(qs, options)

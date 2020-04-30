@@ -1,36 +1,30 @@
-import { ListItemText } from '@material-ui/core';
-import Divider from '@material-ui/core/Divider';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
 import ReactEcharts from 'echarts-for-react';
 import moment from 'moment';
 import React, { useMemo } from 'react';
 import { deepGet } from '../../../lib/utils';
-import { OverlayCircularProgress } from '../../OverlayCircularProgress';
-import { useStyles } from './styles';
+import ChartWrapper from '../ChartWrapper/ChartWrapper';
 
 
 const AgeBarChart = ({ data, loading, title, height }) => {
-  const { dateModified, sampleSize, dataList, average, min, max } = useMemo(() => ({
+  const { dateModified, sampleSize, dataList, averageValue, minValue, maxValue, maxGroupValue } = useMemo(() => ({
     dateModified: deepGet(data, 'dateModified'),
     searchString: deepGet(data, 'searchString'),
     sampleSize: deepGet(data, 'content.aggregation.sampleSize'),
-    min: deepGet(data, 'content.aggregation.min', 0),
-    max: deepGet(data, 'content.aggregation.max', 0),
-    average: deepGet(data, 'content.aggregation.average', 0),
+    minValue: deepGet(data, 'content.aggregation.minFieldValue', 0),
+    maxValue: deepGet(data, 'content.aggregation.maxFieldValue', 0),
+    maxGroupValue: deepGet(data, 'content.aggregation.maxGroupValue', 0),
+    averageValue: deepGet(data, 'content.aggregation.averageFieldValue', 0),
     dataList: deepGet(data, 'content.data', []),
   }), [ data ]);
 
-  const sortedDataList = useMemo(() => dataList.sort(({ key1 }, { key2 }) => key1 - key2), [ dataList ]);
+  const sortedDataList = useMemo(() => dataList.sort(({ key: key1 }, { key: key2 }) => key1 - key2), [ dataList ]);
   const xAxisData = useMemo(() => sortedDataList.map(({ label }) => label), [ sortedDataList ]);
 
   const option = useMemo(() => ({
     xAxis: [ {
       type: 'category',
       data: xAxisData,
-      name: 'Varsta',
+      name: 'Vârsta',
     } ],
     yAxis: [ {
       type: 'value',
@@ -56,45 +50,29 @@ const AgeBarChart = ({ data, loading, title, height }) => {
     } ],
     visualMap: [ {
       show: false,
+      max: maxGroupValue,
       inRange: {
-        colorLightness: [ 0.6, -0.05 ],
+        colorLightness: [ 0.6, 0.1 ],
       },
     } ],
-  }), [ xAxisData, sortedDataList ]);
+  }), [ xAxisData, sortedDataList, maxGroupValue]);
 
-  const classes = useStyles();
 
-  return <Paper className={ classes.paper }>
-    <Typography variant={ 'h5' } className={ classes.title }>
-      { title }
-    </Typography>
-    <Divider variant={ 'middle' }/>
+  const metadataList = useMemo(() => [
+    { label: 'Vârsta minimă', value: minValue.toFixed(2) },
+    { label: 'Vârsta maximă', value: maxValue.toFixed(2) },
+    { label: 'Vârsta medie', value: averageValue.toFixed(2) },
+    { label: 'Numărul cazurilor analizate', value: sampleSize },
+    { label: 'Ultima actualizare', value: moment(dateModified).format('DD-MM-YYYY') },
+  ], [ minValue, maxValue, sampleSize, dateModified, averageValue ]);
+
+  return <ChartWrapper title={ title } loading={ loading } metadataList={ metadataList }>
     <ReactEcharts
       option={ option }
       style={ { height, width: '100%' } }
       opts={ { renderer: 'svg' } }
     />
-    <Divider variant={ 'middle' }/>
-
-    <List dense>
-      <ListItem>
-        <ListItemText>Vârsta minimă: { min.toFixed(2) }</ListItemText>
-      </ListItem>
-      <ListItem>
-        <ListItemText>Vârsta maximă: { max.toFixed(2) }</ListItemText>
-      </ListItem>
-      <ListItem>
-        <ListItemText>Vârsta medie: { average.toFixed(2) }</ListItemText>
-      </ListItem>
-      <ListItem>
-        <ListItemText>Numărul cazurilor analizate: { sampleSize }</ListItemText>
-      </ListItem>
-      <ListItem>
-        <ListItemText>Ultima actualizare: { moment(dateModified).format('DD-MM-YYYY') }</ListItemText>
-      </ListItem>
-    </List>
-    <OverlayCircularProgress show={ loading } circularSize={100}/>
-  </Paper>;
+  </ChartWrapper>;
 };
 
 

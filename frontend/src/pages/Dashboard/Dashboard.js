@@ -3,10 +3,12 @@ import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import AgeBarChart from '../../components/charts/AgeBarChart/AgeBarChart';
 import CountryChart from '../../components/charts/CountryChart/CountryChart';
+import DeathDateChart from '../../components/charts/DeathDateChart/DeathDateChart';
+import { GenderChart } from '../../components/charts/GenderChart';
 import { withLayout } from '../../components/Layout';
 import { globalStatistics } from '../../lib/redux/actions/';
 
-const Dashboard = ({ loadCharts, ageHistogram, countyHistogram, genderHistogram }) => {
+const Dashboard = ({ loadCharts, ageHistogram, countyHistogram, genderHistogram, deathDateHistogram }) => {
   useEffect(() => loadCharts(), [ loadCharts ]);
 
   return <Box>
@@ -19,6 +21,18 @@ const Dashboard = ({ loadCharts, ageHistogram, countyHistogram, genderHistogram 
     <CountryChart
       { ...countyHistogram }
       title={ 'Distribuția deceselor pe județe' }
+      height={ 500 }
+    />
+
+    <GenderChart
+      { ...genderHistogram }
+      title={ 'Distribuția deceselor pe gen' }
+      height={ 500 }
+    />
+
+    <DeathDateChart
+      { ...deathDateHistogram }
+      title={ 'Distribuția deceselor pe zile' }
       height={ 500 }
     />
   </Box>;
@@ -41,15 +55,18 @@ const mapStateToProps = state => {
       loading: state.globalStatistics.countyHistogramLoading,
       errors: state.globalStatistics.countyHistogramErrors,
     },
+    deathDateHistogram: {
+      data: state.globalStatistics.deathDateHistogram,
+      loading: state.globalStatistics.deathDateHistogramLoading,
+      errors: state.globalStatistics.deathDateHistogramErrors,
+    },
   };
 };
 
 const mapDispatchToProps = dispatch => {
   return {
     loadCharts: () => {
-      dispatch(globalStatistics.loadGlobalAgeHistogram());
-      dispatch(globalStatistics.loadGlobalCountyHistogram());
-      dispatch(globalStatistics.loadGlobalGenderHistogram());
+      dispatch(globalStatistics.loadGlobalHistograms());
     },
   };
 };
