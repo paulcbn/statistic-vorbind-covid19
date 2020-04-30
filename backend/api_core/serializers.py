@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from rest_framework.utils import json
 
-from api_core.models import Statistic
+from api_core.models import Statistic, Case, Hospital, Comorbidity
 
 
 class StatisticSerializer(serializers.ModelSerializer):
@@ -13,3 +13,26 @@ class StatisticSerializer(serializers.ModelSerializer):
 
     def get_content(self, item):
         return json.loads(item.content)
+
+
+class HospitalSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Hospital
+        fields = ['name', ]
+
+
+class ComorbiditySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comorbidity
+        fields = ['name', ]
+
+
+class CaseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Case
+        initial_hospital = HospitalSerializer(read_only=True, many=False)
+        final_hospital = HospitalSerializer(read_only=True, many=False)
+        comorbidities = ComorbiditySerializer(read_only=True, many=True)
+        fields = ['case_number', 'collision_index', 'date_created', 'date_modified', 'gender', 'age', 'county',
+                  'hospital_admission_date', 'test_date', 'positive_result_date', 'death_date', 'source',
+                  'comorbidities', 'initial_hospital', 'final_hospital']
