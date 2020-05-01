@@ -85,7 +85,7 @@ class Case(models.Model):
                                        related_name="finally_admitted_deaths",
                                        null=True, blank=True)
 
-    source = models.ForeignKey(to=DataSource, on_delete=models.CASCADE, verbose_name="Sursa de date")
+    source = models.ForeignKey(to=DataSource, on_delete=models.CASCADE, verbose_name="Sursa de date", null=True)
     parsed_text = models.TextField(verbose_name="Textul interpretat")
 
     validated = models.BooleanField(verbose_name="Deces validat manual", default=False)

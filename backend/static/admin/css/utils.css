@@ -1,0 +1,14 @@
+th {
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: normal;
+    background-color: #79aec8;
+}
+
+table{
+    width: 600px;
+}
+
+td:hover{
+    background-color: #c4dce8;
+}
