@@ -1,4 +1,5 @@
 import Box from '@material-ui/core/Box';
+import Grid from '@material-ui/core/Grid';
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import AgeBarChart from '../../components/charts/AgeBarChart/AgeBarChart';
@@ -11,12 +12,25 @@ import { globalStatistics } from '../../lib/redux/actions/';
 const Dashboard = ({ loadCharts, ageHistogram, countyHistogram, genderHistogram, deathDateHistogram }) => {
   useEffect(() => loadCharts(), [ loadCharts ]);
 
+
   return <Box>
-    <AgeBarChart
-      { ...ageHistogram }
-      title={ 'Distribuția deceselor pe categorii de vârstă' }
-      height={ 500 }
-    />
+    <Grid container>
+      <Grid item xs={ 12 } md={ 7 }>
+        <AgeBarChart
+          { ...ageHistogram }
+          title={ 'Distribuția deceselor pe categorii de vârstă' }
+          height={ 400 }
+        />
+      </Grid>
+      <Grid item xs={ 12 } md={ 5 }>
+        <GenderChart
+          { ...genderHistogram }
+          title={ 'Distribuția deceselor pe gen' }
+          height={ 400 }
+        />
+      </Grid>
+    </Grid>
+
 
     <CountryChart
       { ...countyHistogram }
@@ -24,11 +38,6 @@ const Dashboard = ({ loadCharts, ageHistogram, countyHistogram, genderHistogram,
       height={ 500 }
     />
 
-    <GenderChart
-      { ...genderHistogram }
-      title={ 'Distribuția deceselor pe gen' }
-      height={ 500 }
-    />
 
     <DeathDateChart
       { ...deathDateHistogram }

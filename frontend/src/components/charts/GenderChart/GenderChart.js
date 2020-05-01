@@ -20,10 +20,18 @@ const GenderChart = ({ data, loading, title, height }) => {
       trigger: 'item',
       formatter: 'Decese {b}:<br/> {c} ({d}%)',
     },
+    legend: {
+      orient: 'vertical',
+      bottom: 10,
+      left: 10
+    },
     series: [
       {
         type: 'pie',
         data: chartData,
+        label: {
+          show: false,
+        },
         emphasis: {
           itemStyle: {
             shadowBlur: 10,
