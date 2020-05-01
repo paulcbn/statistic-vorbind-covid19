@@ -42,3 +42,5 @@ export const COUNTIES = {
   'VN': 'Vrancea',
   'B': 'București',
 };
+
+export const isValidCountyCode = (countyCode) => COUNTIES[countyCode] !== undefined;
