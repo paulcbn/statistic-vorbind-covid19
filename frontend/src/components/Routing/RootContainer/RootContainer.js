@@ -11,7 +11,7 @@ const RootContainer = () => {
         </Route>
         <Route exact path="/judete/">
           <CountyListPage/>
-        </Route>`
+        </Route>
         <Route exact path="/judete/:countyCode">
           <CountyDetailPage/>
         </Route>
