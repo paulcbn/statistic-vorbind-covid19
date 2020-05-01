@@ -38,6 +38,7 @@ class AgeFilter(admin.SimpleListFilter):
 
 @admin.register(Case)
 class CaseAdmin(admin.ModelAdmin):
+    autocomplete_fields = ["comorbidities", "initial_hospital", "final_hospital", ]
     list_filter = ("validated", "gender", AgeFilter, "county")
     readonly_fields = ['source', 'parsed_text']
     ordering = ('-case_number', 'collision_index')
@@ -84,12 +85,12 @@ class DataSourceAdmin(admin.ModelAdmin):
 
 @admin.register(Hospital)
 class HospitalAdmin(admin.ModelAdmin):
-    pass
+    search_fields = ['name', ]
 
 
 @admin.register(Comorbidity)
 class ComorbidityAdmin(admin.ModelAdmin):
-    pass
+    search_fields = ['name', ]
 
 
 @admin.register(Statistic)
