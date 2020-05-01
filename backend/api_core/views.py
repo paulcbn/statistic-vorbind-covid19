@@ -3,11 +3,8 @@ from django.views.generic import TemplateView, RedirectView
 from django_filters import rest_framework as filters
 from rest_framework import generics
 from rest_framework import permissions
-from rest_framework import permissions
 from rest_framework.generics import ListAPIView
 
-from api_core.models import Statistic, Case
-from api_core.serializers import StatisticSerializer
 from api_core.models import Statistic, Case
 from api_core.pagination import DefaultPagination
 from api_core.serializers import StatisticSerializer, CaseSerializer
