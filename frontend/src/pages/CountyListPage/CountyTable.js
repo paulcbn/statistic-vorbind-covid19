@@ -19,7 +19,7 @@ const ROWS_PER_PAGE = 10;
 
 const CountyTable = ({ countyHistogram, onSelectCounty }) => {
   const countyListData = useMemo(() => deepGet(countyHistogram, 'data.content.data', []), [ countyHistogram ]);
-  const sortedCountyListData = useMemo(() => countyListData.sort(({ value: value1 }, { value: value2 }) => value2 - value1), [ countyHistogram ]);
+  const sortedCountyListData = useMemo(() => countyListData.sort(({ value: value1 }, { value: value2 }) => value2 - value1), [ countyListData ]);
   const classes = useCountyTableStyles();
 
   const [ page, setPage ] = useState(0);
@@ -42,7 +42,7 @@ const CountyTable = ({ countyHistogram, onSelectCounty }) => {
           </IconButton>
         </TableCell>
       </TableRow>);
-  }, [ sortedCountyListData, page ]);
+  }, [ sortedCountyListData, page, classes, onSelectCounty ]);
 
   return <Paper className={ classes.paper }>
     <TableContainer component={ Paper }>
