@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'data_parsing.apps.DataParsingConfig',
     'django_apscheduler',
     'command_runner',
+    'django_filters',
 ]
 
 MIDDLEWARE = [
