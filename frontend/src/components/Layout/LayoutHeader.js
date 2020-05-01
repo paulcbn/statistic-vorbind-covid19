@@ -8,8 +8,8 @@ import { Link, NavLink } from 'react-router-dom';
 import { useLayoutHeaderStyle } from './styles';
 
 const links = [
-  { label: 'Situație zilnică', to: '/situatie-zilnica/' },
-  { label: 'Statistici', to: '/statistici/' },
+  { label: 'Situație pe județe', to: '/judete/', exact: true },
+  // { label: 'Statistici', to: '/statistici/' },
   { label: 'Listă cazuri', to: '/lista-cazuri/' },
 ];
 
@@ -43,7 +43,7 @@ const LayoutHeader = () => {
       <Box className={ classes.flexExpander }/>
       { renderAllLinks() }
     </Toolbar>
-    
+
   </AppBar>;
 };
 

@@ -14,6 +14,20 @@ export const loadGlobalAgeHistogram = () => {
   };
 };
 
+export const loadDeathDateHistogram = () => {
+  return (dispatch, getState) => {
+    dispatch({ type: 'GLOBAL_DEATH_DATE_HISTOGRAM_LOADING' });
+    API.get(`/api/statistics/global-death-date-histogram`)
+      .then(({ status, data }) => {
+        if (status === 200) {
+          dispatch({ type: 'GLOBAL_DEATH_DATE_HISTOGRAM_LOADED', data: keysToCamel(data) });
+        } else if (status >= 400 && status < 500) {
+          dispatch({ type: 'GLOBAL_DEATH_DATE_HISTOGRAM_ERROR', data: keysToCamel(data) });
+        }
+      });
+  };
+};
+
 export const loadGlobalGenderHistogram = () => {
   return (dispatch, getState) => {
     dispatch({ type: 'GLOBAL_GENDER_HISTOGRAM_LOADING' });
@@ -39,5 +53,14 @@ export const loadGlobalCountyHistogram = () => {
           dispatch({ type: 'GLOBAL_COUNTY_HISTOGRAM_ERROR', data: keysToCamel(data) });
         }
       });
+  };
+};
+
+export const loadGlobalHistograms = () => {
+  return (dispatch, getState) => {
+    dispatch(loadGlobalGenderHistogram());
+    dispatch(loadGlobalCountyHistogram());
+    dispatch(loadGlobalAgeHistogram());
+    dispatch(loadDeathDateHistogram());
   };
 };
