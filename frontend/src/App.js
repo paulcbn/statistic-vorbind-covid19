@@ -1,6 +1,6 @@
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { ThemeProvider } from '@material-ui/core/styles';
-import  echarts from 'echarts';
+import echarts from 'echarts';
 import moment from 'moment';
 import 'moment/locale/ro';
 import React from 'react';
@@ -11,6 +11,8 @@ import RootContainer from './components/Routing/RootContainer/RootContainer';
 import { rootReducer } from './lib/redux/reducers';
 import theme from './lib/theme';
 import geoJson from './config/romania_map';
+import MomentUtils from '@date-io/moment';
+import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 
 moment.locale('ro');
 
@@ -22,9 +24,11 @@ function App() {
   return <>
     <CssBaseline/>
     <ThemeProvider theme={ theme }>
-      <Provider store={ store }>
-        <RootContainer/>
-      </Provider>
+      <MuiPickersUtilsProvider utils={ MomentUtils }>
+        <Provider store={ store }>
+          <RootContainer/>
+        </Provider>
+      </MuiPickersUtilsProvider>
     </ThemeProvider>
   </>;
 }

@@ -1,5 +1,18 @@
 import makeStyles from '@material-ui/core/styles/makeStyles';
 
+export const useStyles = makeStyles(theme => ({
+  root: {
+    minHeight: '100vh',
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  container: {
+    display: 'flex',
+    flexGrow: 1,
+    flexDirection: 'column',
+  },
+}));
+
 export const useLayoutHeaderStyle = makeStyles(theme => ({
   appBar: {
     padding: theme.spacing(1, 1),
