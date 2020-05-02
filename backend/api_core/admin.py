@@ -58,6 +58,11 @@ class CaseAdmin(admin.ModelAdmin):
         }),
     )
 
+    def get_readonly_fields(self, request, obj=None):
+        if request.user.is_staff and request.user.is_superuser:
+            return []
+        return CaseAdmin.readonly_fields
+
 
 class CaseInline(admin.TabularInline):
     model = Case
@@ -65,6 +70,11 @@ class CaseInline(admin.TabularInline):
     readonly_fields = ["parsed_text"]
     can_delete = False
     extra = 0
+
+    def get_readonly_fields(self, request, obj=None):
+        if request.user.is_staff and request.user.is_superuser:
+            return []
+        return CaseInline.readonly_fields
 
 
 @admin.register(DataSource)
