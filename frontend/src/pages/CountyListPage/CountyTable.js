@@ -50,7 +50,7 @@ const CountyTable = ({ countyHistogram, onSelectCounty }) => {
         <TableHead className={ classes.tableHead }>
           <TableRow>
             <TableCell className={ classes.tableHeaderCell } align='left'>Județ</TableCell>
-            <TableCell className={ classes.tableHeaderCell } align='left'>Număr decese</TableCell>
+            <TableCell className={ classes.tableHeaderCell } align='left'>Nr. decese</TableCell>
             <TableCell className={ classes.tableHeaderCell } align='left'>Detalii</TableCell>
           </TableRow>
         </TableHead>

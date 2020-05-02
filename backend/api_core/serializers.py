@@ -34,12 +34,13 @@ class DataSourceSerializer(serializers.ModelSerializer):
 
 
 class CaseSerializer(serializers.ModelSerializer):
+    initial_hospital = HospitalSerializer(read_only=True, many=False)
+    final_hospital = HospitalSerializer(read_only=True, many=False)
+    comorbidities = ComorbiditySerializer(read_only=True, many=True)
+    source = DataSourceSerializer(many=False)
+
     class Meta:
         model = Case
-        initial_hospital = HospitalSerializer(read_only=True, many=False)
-        final_hospital = HospitalSerializer(read_only=True, many=False)
-        comorbidities = ComorbiditySerializer(read_only=True, many=True)
-        source = DataSourceSerializer(read_only=True, many=False)
         fields = ['case_number', 'collision_index', 'date_created', 'date_modified', 'gender', 'age', 'county',
                   'hospital_admission_date', 'test_date', 'positive_result_date', 'death_date', 'source',
                   'comorbidities', 'initial_hospital', 'final_hospital']

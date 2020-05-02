@@ -23,7 +23,7 @@ const GenderChart = ({ data, loading, title, height }) => {
     legend: {
       orient: 'vertical',
       bottom: 10,
-      left: 10
+      left: 10,
     },
     series: [
       {

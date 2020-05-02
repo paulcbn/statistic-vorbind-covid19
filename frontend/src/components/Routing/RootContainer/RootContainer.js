@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
-import { NotFound, Dashboard, CountyDetailPage, CountyListPage } from '../../../pages';
+import { NotFound, Dashboard, CountyDetailPage, CountyListPage, CaseListPage } from '../../../pages';
 
 const RootContainer = () => {
   return (
@@ -14,6 +14,10 @@ const RootContainer = () => {
         </Route>
         <Route exact path="/judete/:countyCode">
           <CountyDetailPage/>
+        </Route>
+
+        <Route exact path="/lista-cazuri/">
+          <CaseListPage/>
         </Route>
         <Route>
           <NotFound/>

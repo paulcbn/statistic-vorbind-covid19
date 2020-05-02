@@ -37,6 +37,7 @@ class ProductFilter(filters.FilterSet):
             'comorbidities__name': ['icontains', ],
             'initial_hospital__name': ['icontains', ],
             'final_hospital__name': ['icontains', ],  # usage example: ?final_hospital__name__icontains=Covasna
+            'validated': ['exact', ]
         }
 
 

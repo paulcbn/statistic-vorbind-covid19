@@ -2,11 +2,13 @@ import { Container } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import React from 'react';
 import LayoutHeader from './LayoutHeader';
+import { useStyles } from './styles';
 
-const Layout = ({ children}) => {
-  return <Box>
+const Layout = ({ children }) => {
+  const classes = useStyles();
+  return <Box className={ classes.root }>
     <LayoutHeader/>
-    <Container>
+    <Container className={classes.container}>
       { children }
     </Container>
   </Box>;
