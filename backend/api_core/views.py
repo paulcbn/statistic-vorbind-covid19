@@ -80,8 +80,9 @@ class ProductFilter(filters.FilterSet):
 
 
 class CaseView(ListAPIView):
+    ordering = ['-case_number', '-collision_index']
     serializer_class = CaseSerializer
     pagination_class = DefaultPagination
-    queryset = Case.objects.order_by("case_number", "collision_index").all()
+    queryset = Case.objects.all()
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_class = ProductFilter

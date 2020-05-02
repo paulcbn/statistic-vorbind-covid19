@@ -15,7 +15,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import Select from '@material-ui/core/Select';
-import ExpandMoreIcon from '@material-ui/core/SvgIcon/SvgIcon';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Typography from '@material-ui/core/Typography';
 import React, { useMemo, useState } from 'react';
 import { COUNTIES } from '../../config/countyInfo';
@@ -107,15 +107,15 @@ const FilterBox = ({ onChange }) => {
     return result;
   }, [ gender, county, validated, ageLowBound, ageHighBound ]);
 
-  return <ExpansionPanel>
+  return <ExpansionPanel className={classes.expansionPanel}>
     <ExpansionPanelSummary
       expandIcon={ <ExpandMoreIcon/> }
     >
-      <Typography className={ classes.filters }>Filtre</Typography>
+      <Typography color='primary' variant={'h5'}>Filtre</Typography>
     </ExpansionPanelSummary>
     <ExpansionPanelDetails>
       <Grid container>
-        <Grid item xs={12} className={ classes.dividerBox }>
+        <Grid item xs={ 12 } className={ classes.dividerBox }>
           <Divider/>
         </Grid>
         <Grid item xs={ 12 } sm={ 6 } md={ 3 } className={ classes.gridItems }>

@@ -12,6 +12,9 @@ export const useStyles = makeStyles(theme => ({
   tableHeaderCell: {
     fontWeight: 'bold',
   },
+  expansionPanel:{
+    background: '#eeeeee'
+  },
   contentPaper: {
     display: 'flex',
     position: 'relative',
