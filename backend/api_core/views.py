@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.http import HttpResponse
+from django.views import View
 from django.views.generic import TemplateView, RedirectView
 from django_filters import rest_framework as filters
 from rest_framework import generics
@@ -8,6 +10,10 @@ from rest_framework.generics import ListAPIView
 from api_core.models import Statistic, Case
 from api_core.pagination import DefaultPagination
 from api_core.serializers import StatisticSerializer, CaseSerializer
+from data_parsing.services.case_analyzer.case_analyzer_service import analyze_all_cases
+from data_parsing.services.raw_data_analyzer_service import create_deaths_from_data_sources
+from data_parsing.services.sources_collector_service import collect_data_sources
+from data_parsing.services.statistics.daily import generate_daily_statistics
 
 
 class StatisticView(generics.RetrieveAPIView):
@@ -35,15 +41,69 @@ class UtilsView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        missing_cases = self.get_missing_cases()
         context.update({
             "user": self.request.user,
             "has_permission": True,
             "is_popup": False,
             "available_apps": admin.site.each_context(self.request)["available_apps"],
             "title": "Utils",
-            "missing_cases": self.get_missing_cases(),
+            "missing_cases": missing_cases,
+            "missing_cases_intervals": self.make_intervals(missing_cases)
         })
         return context
+
+    def make_intervals(self, numeric_list):
+        intervals = list()
+        if len(numeric_list) == 0:
+            return intervals
+        start = 0
+        for i in range(len(numeric_list) - 1):
+            if numeric_list[i + 1] - numeric_list[i] != 1 and i > start:
+                intervals.append((numeric_list[start], numeric_list[i]))
+                start = i + 1
+            elif numeric_list[i + 1] - numeric_list[i] != 1:
+                intervals.append((numeric_list[i], numeric_list[i]))
+                start = i + 1
+        if start < len(numeric_list) - 1:
+            intervals.append((numeric_list[start], numeric_list[-1]))
+        return [f"Cazurile {interval[0]} - {interval[1]}" for interval in intervals]
+
+
+class AnalyzeEachCaseTodayView(View):
+    def get(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            analyze_all_cases(today=True)
+            return HttpResponse(status=200)
+        return HttpResponse(status=401)
+
+
+class AnalyzeRawDataView(View):
+    def get(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            create_deaths_from_data_sources(today=True)
+            return HttpResponse(status=200)
+        return HttpResponse(status=401)
+
+
+class CollectSourcesView(View):
+    def get(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            try:
+                pages = int(kwargs["page_count"])
+                collect_data_sources(base_url="https://stirioficiale.ro/informatii", page_count=pages)
+                return HttpResponse(status=200)
+            except Exception:
+                return HttpResponse(status=400)
+        return HttpResponse(status=401)
+
+
+class GenerateDailyStatsView(View):
+    def get(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            generate_daily_statistics()
+            return HttpResponse(status=200)
+        return HttpResponse(status=401)
 
 
 class CreateCaseView(RedirectView):
