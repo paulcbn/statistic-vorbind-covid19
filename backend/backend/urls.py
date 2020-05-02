@@ -16,7 +16,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+from api_core.views import UtilsView, CreateCaseView
+
 urlpatterns = [
+    path('admin/utils/', UtilsView.as_view()),
+    path('admin/internal/create_missing_case/<int:case_number>/', CreateCaseView.as_view()),
     path('admin/', admin.site.urls),
     path('api/', include('api_core.urls')),
 ]

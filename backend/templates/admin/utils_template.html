@@ -1,0 +1,21 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+{% block extrahead %}
+<link href="{% static 'admin/css/utils.css' %}" rel="stylesheet" type="text/css">
+{% endblock %}
+{% block content %}
+<table>
+    <th>Missing cases</th>
+    {% for case in missing_cases %}
+    {% if user.is_superuser %}
+    <tr>
+        <td><a href="/admin/internal/create_missing_case/{{ case }}">Cazul {{ case }}</a></td>
+    </tr>
+    {% else %}
+    <tr>
+        <td>Cazul {{ case }}</td>
+    </tr>
+    {% endif %}
+    {% endfor %}
+</table>
+{% endblock %}
