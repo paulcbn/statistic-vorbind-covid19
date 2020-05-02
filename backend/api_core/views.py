@@ -57,10 +57,17 @@ class UtilsView(TemplateView):
         intervals = list()
         if len(numeric_list) == 0:
             return intervals
+        start = 0
         for i in range(len(numeric_list) - 1):
-            if numeric_list[i + 1] - numeric_list[i] != 1:
-                intervals.append((numeric_list[i], numeric_list[i + 1]))
-        return [f"Cazurile {interval[0] + 1} - {interval[1] - 1}" for interval in intervals]
+            if numeric_list[i + 1] - numeric_list[i] != 1 and i > start:
+                intervals.append((numeric_list[start], numeric_list[i]))
+                start = i + 1
+            elif numeric_list[i + 1] - numeric_list[i] != 1:
+                intervals.append((numeric_list[i], numeric_list[i]))
+                start = i + 1
+        if start < len(numeric_list) - 1:
+            intervals.append((numeric_list[start], numeric_list[-1]))
+        return [f"Cazurile {interval[0]} - {interval[1]}" for interval in intervals]
 
 
 class AnalyzeEachCaseTodayView(View):
