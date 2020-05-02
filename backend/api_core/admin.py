@@ -61,6 +61,8 @@ class CaseAdmin(admin.ModelAdmin):
 
 class CaseInline(admin.TabularInline):
     model = Case
+    autocomplete_fields = ["comorbidities", "initial_hospital", "final_hospital", ]
+    readonly_fields = ["parsed_text"]
     can_delete = False
     extra = 0
 
