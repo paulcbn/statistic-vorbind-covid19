@@ -17,15 +17,14 @@ def _parse_articles(articles):
     article_index = 1
     for article in articles:
 
-        p = article.find('p')
-        if p is None:
+        article_text = " ".join(article.find("div", {"class": "break-words rich-text"}).strings)
+        if not article_text:
             logger.warning(f'Parsing failed at article {article_index}')
             continue
-
-        match = ARTICLE_REGEX.search(p.text)
+        match = ARTICLE_REGEX.search(article_text)
         if match is not None:
             a = article.find('a')
-            result.append((p.text, a['href']))
+            result.append((article_text, a['href']))
 
         article_index += 1
     return result
