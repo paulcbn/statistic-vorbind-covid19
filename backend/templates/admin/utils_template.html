@@ -2,20 +2,83 @@
 {% load static %}
 {% block extrahead %}
 <link href="{% static 'admin/css/utils.css' %}" rel="stylesheet" type="text/css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="{% static 'admin/js/collapse_table.js' %}" type="text/javascript"></script>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<script src="{% static 'admin/js/command_run.js' %}" type="text/javascript"></script>
 {% endblock %}
 {% block content %}
+
 <table>
-    <th>Missing cases</th>
-    {% for case in missing_cases %}
-    {% if user.is_superuser %}
+    <th>Utility commands</th>
+    <th></th>
+    <th></th>
     <tr>
-        <td><a href="/admin/internal/create_missing_case/{{ case }}">Cazul {{ case }}</a></td>
+        <td>Collect sources</td>
+        <td>pages: <input id="pages_input">
+            <div id="page_error"></div>
+        </td>
+        <td>
+            <button class="btn button material-icons" id="collect_sources_btn">play_arrow</button>
+        </td>
     </tr>
-    {% else %}
     <tr>
-        <td>Cazul {{ case }}</td>
+        <td>Analyze raw data for today</td>
+        <td></td>
+        <td>
+            <button class="btn button material-icons" id="analyze_raw_data_btn">play_arrow</button>
+        </td>
     </tr>
-    {% endif %}
+    <tr>
+        <td>Analyze each case for today</td>
+        <td></td>
+        <td>
+            <button class="btn button material-icons" id="analyze_each_case_btn">play_arrow</button>
+        </td>
+    </tr>
+    <tr>
+        <td>Generate daily stats</td>
+        <td></td>
+        <td>
+            <button class="btn button material-icons" id="generate_daily_stats_btn">play_arrow</button>
+        </td>
+    </tr>
+    <tr>
+        <td>Last command:</td>
+        <td>
+            <div id="last_command_name">?</div>
+        </td>
+        <td>
+            <div id="last_command_status">?</div>
+        </td>
+    </tr>
+</table>
+<br>
+<table>
+    <th>Intervale cazuri lipsă</th>
+    {% for interval in missing_cases_intervals %}
+    <tr>
+        <td>
+            <div>{{ interval }}</div>
+        </td>
+    </tr>
     {% endfor %}
 </table>
+<br>
+<button class="collapsible button btn" type="button">Arată lista cu cazurile lipsă</button>
+<div class="content">
+    <table>
+        {% for case in missing_cases %}
+        {% if user.is_superuser %}
+        <tr>
+            <td class="hoverable-td"><a href="/admin/internal/create_missing_case/{{ case }}">Cazul {{ case }}</a></td>
+        </tr>
+        {% else %}
+        <tr>
+            <td class="hoverable-td">Cazul {{ case }}</td>
+        </tr>
+        {% endif %}
+        {% endfor %}
+    </table>
+</div>
 {% endblock %}
