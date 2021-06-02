@@ -14,7 +14,7 @@ requests==2.23.0
 six==1.14.0
 soupsieve==2.0
 sqlparse==0.3.1
-urllib3==1.25.9
+urllib3==1.26.5
 APScheduler==3.6.3
 django-apscheduler==0.3.0
 django-filter==2.2.0
